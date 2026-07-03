@@ -1,17 +1,17 @@
 # Drasl default config file
 
 # Example: drasl.example.com
-Domain = "CHANGEME"
+Domain = "mcauth.esb.is-a.dev"
 
 # Example: https://drasl.example.com
-BaseURL = "https://CHANGEME"
+BaseURL = "https://mcauth.esb.is-a.dev"
 
 # List of usernames who automatically become admins of the Drasl instance
-DefaultAdmins = [""]
+DefaultAdmins = ["esb"]
 
 [CreateNewPlayer]
 AllowChoosingUUID = true
 
 [RegistrationNewPlayer]
 Allow = true
-RequireInvite = true
+RequireInvite = false
