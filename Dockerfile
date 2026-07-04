@@ -10,7 +10,7 @@ RUN make && make install
 # ---- Runtime stage ----
 FROM alpine:3.20
 
-RUN apk add --no-cache ca-certificates python3 py3-pip \
+RUN apk add --no-cache ca-certificates python3 sqlite py3-pip \
     && pip install --no-cache-dir --break-system-packages -U huggingface_hub
 
 COPY --from=build /usr/bin/drasl /usr/bin/drasl
