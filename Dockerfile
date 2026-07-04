@@ -1,25 +1,23 @@
 # ---- Build stage ----
-FROM golang:1.25-bookworm AS build
+FROM golang:1.25-alpine AS build
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    make gcc nodejs npm ca-certificates git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache make gcc musl-dev nodejs npm git ca-certificates
 
 WORKDIR /src
 COPY . .
-
 RUN make && make install
 
 # ---- Runtime stage ----
-FROM debian:bookworm-slim
+FROM alpine:3.20
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates python3 py3-pip \
+    && pip install --no-cache-dir --break-system-packages -U huggingface_hub
 
 COPY --from=build /usr/bin/drasl /usr/bin/drasl
 COPY --from=build /usr/share/drasl /usr/share/drasl
-
 COPY config.toml /etc/drasl/config.toml
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 10000
-CMD ["drasl"]
+ENTRYPOINT ["/entrypoint.sh"]
