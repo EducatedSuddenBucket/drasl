@@ -1,3 +1,4 @@
+# ---- Build stage ----
 FROM golang:1.25-bookworm AS build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -8,4 +9,17 @@ WORKDIR /src
 COPY . .
 
 RUN make && make install
-RUN which drasl && find / -maxdepth 6 -iname "drasl*" -type f 2>/dev/null
+
+# ---- Runtime stage ----
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/bin/drasl /usr/bin/drasl
+COPY --from=build /usr/share/drasl /usr/share/drasl
+
+COPY config.toml /etc/drasl/config.toml
+
+EXPOSE 10000
+CMD ["drasl"]
